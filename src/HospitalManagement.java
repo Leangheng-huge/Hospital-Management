@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
-// Doctor class
 class Doctor {
     private String name;
     private String specialization;
@@ -22,7 +21,6 @@ class Doctor {
     public void setAvailable(boolean available) { this.available = available; }
 }
 
-// Patient class
 class Patient {
     private int id;
     private String name;
@@ -62,18 +60,15 @@ class Patient {
     public void setDischarged(boolean discharged) { this.discharged = discharged; }
 }
 
-// Main Hospital Management System with Swing GUI
 public class HospitalManagement extends JFrame {
     private List<Doctor> doctors;
     private List<Patient> patients;
     private boolean[] rooms;
 
-    // GUI Components
     private JPanel mainPanel;
     private CardLayout cardLayout;
 
     public HospitalManagement() {
-        // Initialize data
         doctors = new ArrayList<>();
         doctors.add(new Doctor("Kim Sabu", "General"));
         doctors.add(new Doctor("Yoon Seo-jung", "Neurology"));
@@ -84,7 +79,6 @@ public class HospitalManagement extends JFrame {
         rooms = new boolean[10];
         patients = new ArrayList<>();
 
-        // Setup GUI
         setupGUI();
     }
 
@@ -94,11 +88,9 @@ public class HospitalManagement extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Create main panel with CardLayout
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Add all panels
         mainPanel.add(createMenuPanel(), "MENU");
         mainPanel.add(createAddPatientPanel(), "ADD_PATIENT");
         mainPanel.add(createAssignDoctorPanel(), "ASSIGN_DOCTOR");
@@ -281,6 +273,13 @@ public class HospitalManagement extends JFrame {
 
         JLabel doctorLabel = new JLabel("Select Doctor:");
         JComboBox<String> doctorCombo = new JComboBox<>();
+
+        for (Doctor doctor : doctors) {
+            if (doctor.isAvailable()) {
+                doctorCombo.addItem(doctor.getName() + " - " + doctor.getSpecialization());
+            }
+        }
+
         gbc.gridx = 0; gbc.gridy = 2;
         panel.add(doctorLabel, gbc);
         gbc.gridx = 1;
@@ -304,7 +303,6 @@ public class HospitalManagement extends JFrame {
                     return;
                 }
 
-                // Update doctor list
                 doctorCombo.removeAllItems();
                 List<Doctor> availableDoctors = new ArrayList<>();
                 for (Doctor doctor : doctors) {
@@ -319,15 +317,19 @@ public class HospitalManagement extends JFrame {
                     return;
                 }
 
-                int result = JOptionPane.showConfirmDialog(this, doctorCombo,
-                        "Select a doctor", JOptionPane.OK_CANCEL_OPTION);
-
-                if (result == JOptionPane.OK_OPTION && doctorCombo.getSelectedIndex() >= 0) {
+                if (doctorCombo.getSelectedIndex() >= 0) {
                     Doctor selectedDoctor = availableDoctors.get(doctorCombo.getSelectedIndex());
                     patient.setAssignedDoctor(selectedDoctor.getName());
                     selectedDoctor.setAvailable(false);
                     JOptionPane.showMessageDialog(this, "Doctor " + selectedDoctor.getName() + " assigned to " + patient.getName());
                     idField.setText("");
+
+                    doctorCombo.removeAllItems();
+                    for (Doctor doctor : doctors) {
+                        if (doctor.isAvailable()) {
+                            doctorCombo.addItem(doctor.getName() + " - " + doctor.getSpecialization());
+                        }
+                    }
                 }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid Patient ID!");
